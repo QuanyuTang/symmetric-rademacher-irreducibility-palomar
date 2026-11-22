@@ -1,0 +1,69 @@
+version: "v0.4"
+project:
+  name: "Irreducibility for symmetric Rademacher matrices"
+  description: >-
+    A Lean 4 formalization of the stretched-exponential upper bound on the
+    probability of reducibility over the rationals for the characteristic
+    polynomial of a symmetric matrix with independent fair upper-triangular signs.
+  authors: ["Tao Hu", "Quanyu Tang"]
+  responsible_maintainers: ["Quanyu Tang"]
+  license: "Apache-2.0"
+repository:
+  role: "substantive-development"
+classification:
+  arxiv: ["math.PR", "math.NT"]
+  msc2020: ["60B20", "12E05"]
+sources:
+  - title: "Unconditional irreducibility of characteristic polynomials of symmetric Rademacher matrices"
+    authors: ["Tao Hu", "Quanyu Tang"]
+    type: "paper"
+    location: "Main theorem"
+    relationship: "formalizes"
+    note: "Manuscript supplied by the authors for formalization."
+  - title: "Random symmetric matrices: rank distribution and irreducibility of the characteristic polynomial"
+    authors: ["Asaf Ferber", "Vishesh Jain", "Ashwin Sah", "Mehtaab Sawhney"]
+    id: "https://arxiv.org/abs/2106.04049"
+    type: "paper"
+    location: "Section 3 and Appendix B"
+    relationship: "adapts"
+  - title: "On the counting problem in inverse Littlewood–Offord theory"
+    authors: ["Asaf Ferber", "Vishesh Jain", "Kyle Luh", "Wojciech Samotij"]
+    id: "https://arxiv.org/abs/1904.10425"
+    type: "paper"
+    location: "Appendix A"
+    relationship: "adapts"
+  - title: "A quasi-Riemann hypothesis for Dedekind zeta functions"
+    authors: ["Dean Cureton", "Jesse Thorner"]
+    id: "https://hexagonmath.org/2610.00200v2"
+    type: "paper"
+    location: "Theorem 1.1"
+    relationship: "background"
+    note: "The zero-free region is used via its Lean formalization at the commit listed below."
+  - title: "Explicit versions of the prime ideal theorem for Dedekind zeta functions under GRH"
+    authors: ["Loïc Grenié", "Giuseppe Molteni"]
+    id: "https://doi.org/10.1090/mcom3031"
+    type: "paper"
+    location: "Section 2, equations (2.2)–(2.6)"
+    relationship: "background"
+    note: "Background for the Euler product and prime-power Dirichlet series."
+related_formalizations:
+  - id: "https://github.com/AxiomMath/DedekindZetaZeroFree/commit/09afbb4ce6570c1615d58509dc197fc9f0956b7d"
+    relationship: "builds-on"
+    note: "The Lean proof of the zero-free half-plane for the Dedekind zeta function."
+automation:
+  methods:
+    - method: "agent"
+      models: ["Codex"]
+      framework: "Lean 4 and Mathlib"
+  notes: "Codex developed the Lean proof from the authors' original informal argument and its Lean-oriented revision."
+fidelity:
+  divergences: "The proof of the finite-field mean estimate uses a bound on the prime interval that appears in the main argument."
+review:
+  status: "agent-reviewed"
+  notes: "The Lean statement was checked against both manuscripts, and the final proof passed a transitive axiom audit against the pinned analytic dependency."
+alignment:
+  namespace: "PalomarBernoulli"
+  statements:
+    - source: "Main theorem"
+      lean: "PalomarBernoulli.main_result"
+      module: "PalomarBernoulliChallenge.lean and PalomarBernoulliSolution.lean"

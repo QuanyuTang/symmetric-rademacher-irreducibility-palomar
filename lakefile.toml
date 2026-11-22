@@ -1,0 +1,35 @@
+name = "symmetric_rademacher_irreducibility"
+defaultTargets = ["Bernoulli", "PalomarBernoulliChallenge", "PalomarBernoulliSolution"]
+
+[[require]]
+name = "dedekind_zeta"
+git = "https://github.com/AxiomMath/DedekindZetaZeroFree"
+rev = "09afbb4ce6570c1615d58509dc197fc9f0956b7d"
+
+[[require]]
+name = "FiniteAbelianGlobalReciprocityv2"
+path = "vendor/class-field-theory"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "0493595ecd5da8ef14742febab99728f98e948e8"
+
+[[lean_lib]]
+name = "Bernoulli"
+globs = ["Bernoulli.+"]
+
+[[lean_lib]]
+name = "ZetaGrowthSetup"
+
+[[lean_lib]]
+name = "ZetaPrimeAverageComplete"
+
+[[lean_lib]]
+name = "SymmetricBernoulliIrreducibility"
+
+[[lean_lib]]
+name = "PalomarBernoulliChallenge"
+
+[[lean_lib]]
+name = "PalomarBernoulliSolution"

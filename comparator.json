@@ -1,0 +1,8 @@
+{
+  "challenge_module": "PalomarBernoulliChallenge",
+  "solution_module": "PalomarBernoulliSolution",
+  "theorem_names": ["PalomarBernoulli.main_result"],
+  "definition_names": [],
+  "permitted_axioms": ["propext", "Quot.sound", "Classical.choice"],
+  "enable_nanoda": true
+}

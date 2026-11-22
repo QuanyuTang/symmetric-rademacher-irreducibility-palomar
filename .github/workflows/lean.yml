@@ -1,0 +1,71 @@
+name: Lean verification
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_comparator:
+        description: "Also replay the full proof export in Lean and NanoDa"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 270
+    steps:
+      - name: Check out the source
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
+        with:
+          persist-credentials: "false"
+
+      - name: Put vendor build outputs in the Comparator's writable directory
+        run: |
+          mkdir -p .lake/vendor/class-field-theory
+          ln -s ../../.lake/vendor/class-field-theory vendor/class-field-theory/.lake
+
+      - name: Install the pinned Lean toolchain and fetch Mathlib
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865
+        env:
+          MATHLIB_CACHE_DIR: ${{ runner.temp }}/mathlib-cache
+        with:
+          auto-config: "false"
+          build: "false"
+          use-github-cache: "false"
+          use-mathlib-cache: "true"
+
+      - name: Build the library, Challenge, and Solution
+        env:
+          MATHLIB_CACHE_DIR: ${{ runner.temp }}/mathlib-cache
+        run: |
+          lake exe cache clean!
+          lake build
+
+      - name: Audit the final theorem's axiom dependencies
+        run: lake env lean verification/FinalAudit.lean
+
+      - name: Set up the Comparator sandbox on the runner
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_comparator }}
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Compare the statement and verify the proof with Lean and NanoDa
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_comparator }}
+        run: |
+          export PATH="$(lean --print-prefix)/bin:$PATH"
+          lake comparator --config comparator.json
+
+      - name: Check the dependency pins
+        run: git diff --exit-code -- lean-toolchain lake-manifest.json
