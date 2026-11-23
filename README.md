@@ -33,4 +33,4 @@ mkdir -p .lake/vendor/class-field-theory
 ln -s ../../.lake/vendor/class-field-theory vendor/class-field-theory/.lake
 ```
 
-After building, run `PATH="$(lean --print-prefix)/bin:$PATH" lake comparator --config comparator.json` to compare the statement and replay the proof in Lean and NanoDa. Allow several gigabytes for the proof export in addition to the build artifacts. GitHub Actions builds and audits the proof on pushes to `main` and pull requests against `main`. A manually dispatched run can also request full Comparator replay.
+After building, run `PATH="$(lean --print-prefix)/bin:$PATH" lake comparator --config comparator.json` to compare the statement and replay the proof in Lean and NanoDa. Allow several gigabytes for the proof export in addition to the build artifacts. On pushes to `main` and pull requests against `main`, GitHub Actions builds the pinned class field theory dependency in a separate job and reuses its outputs by source and toolchain hash. It then builds and audits the theorem. A manually dispatched run can also request full Comparator replay.

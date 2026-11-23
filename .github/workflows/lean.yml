@@ -20,11 +20,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  verify:
+  class-field-theory:
+    name: Build the pinned class field theory dependency
     runs-on: ubuntu-24.04
-    timeout-minutes: 270
+    timeout-minutes: 360
     steps:
-      - name: Free space for Lean build artifacts
+      - &free-space
+        name: Free space for Lean build artifacts
         if: ${{ runner.environment == 'github-hosted' }}
         run: |
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
@@ -36,33 +38,77 @@ jobs:
           done
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
 
-      - name: Check out the source
+      - &checkout
+        name: Check out the source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
           persist-credentials: "false"
 
-      - name: Put vendor build outputs in the Comparator's writable directory
+      - &vendor-build-directory
+        name: Put vendor build outputs in the Comparator's writable directory
         run: |
           mkdir -p .lake/vendor/class-field-theory
           ln -s ../../.lake/vendor/class-field-theory vendor/class-field-theory/.lake
 
+      - &class-field-source
+        name: Identify the committed class field theory sources
+        id: class-field-source
+        run: echo "tree=$(git rev-parse HEAD:vendor/class-field-theory)" >> "$GITHUB_OUTPUT"
+
+      - &restore-class-field-theory
+        name: Restore pinned class field theory build outputs
+        id: class-field-cache
+        uses: actions/cache/restore@caa296126883cff596d87d8935842f9db880ef25
+        with: &class-field-cache-inputs
+          path: .lake/vendor/class-field-theory/build
+          key: cft-build-v1-ubuntu24-${{ runner.arch }}-${{ steps.class-field-source.outputs.tree }}-${{ hashFiles('lean-toolchain', 'lake-manifest.json') }}
+
       - name: Install the pinned Lean toolchain and fetch Mathlib
+        if: ${{ steps.class-field-cache.outputs.cache-hit != 'true' }}
         uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865
-        env:
+        env: &mathlib-cache-env
           MATHLIB_CACHE_DIR: ${{ runner.temp }}/mathlib-cache
-        with:
+        with: &lean-action-inputs
           auto-config: "false"
           build: "false"
           use-github-cache: "false"
           use-mathlib-cache: "true"
 
+      - name: Build the pinned class field theory dependency from source
+        if: ${{ steps.class-field-cache.outputs.cache-hit != 'true' }}
+        env: *mathlib-cache-env
+        run: |
+          lake exe cache clean!
+          bash .github/scripts/build-lean.sh '@FiniteAbelianGlobalReciprocityv2'
+
+      - name: Save the class field theory build outputs
+        if: ${{ steps.class-field-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@caa296126883cff596d87d8935842f9db880ef25
+        with: *class-field-cache-inputs
+
+  verify:
+    name: Verify the unconditional theorem
+    needs: class-field-theory
+    runs-on: ubuntu-24.04
+    timeout-minutes: 360
+    steps:
+      - *free-space
+      - *checkout
+      - *vendor-build-directory
+      - *class-field-source
+      - *restore-class-field-theory
+
+      - name: Install the pinned Lean toolchain and fetch Mathlib
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865
+        env: *mathlib-cache-env
+        with: *lean-action-inputs
+
       - name: Build the library, Challenge, and Solution
-        env:
-          MATHLIB_CACHE_DIR: ${{ runner.temp }}/mathlib-cache
+        env: *mathlib-cache-env
         run: |
           lake exe cache clean!
           df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
-          lake --no-cache --fail-fast build
+          bash .github/scripts/build-lean.sh
 
       - name: Audit the final theorem's axiom dependencies
         run: lake env lean verification/FinalAudit.lean
