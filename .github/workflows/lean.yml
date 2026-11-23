@@ -24,6 +24,18 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 270
     steps:
+      - name: Free space for Lean build artifacts
+        if: ${{ runner.environment == 'github-hosted' }}
+        run: |
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+          # These SDKs are preinstalled on GitHub's disposable Ubuntu image.
+          for sdk in /usr/local/lib/android/sdk /usr/local/.ghcup /usr/share/swift /usr/share/miniconda; do
+            if [[ -d "$sdk" && "$(realpath -e -- "$sdk")" == "$sdk" ]]; then
+              sudo rm -rf --one-file-system -- "$sdk"
+            fi
+          done
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+
       - name: Check out the source
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803
         with:
@@ -49,7 +61,8 @@ jobs:
           MATHLIB_CACHE_DIR: ${{ runner.temp }}/mathlib-cache
         run: |
           lake exe cache clean!
-          lake build
+          df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"
+          lake --no-cache --fail-fast build
 
       - name: Audit the final theorem's axiom dependencies
         run: lake env lean verification/FinalAudit.lean
@@ -69,3 +82,7 @@ jobs:
 
       - name: Check the dependency pins
         run: git diff --exit-code -- lean-toolchain lake-manifest.json
+
+      - name: Report remaining disk space
+        if: ${{ always() }}
+        run: df -h "$GITHUB_WORKSPACE" "$RUNNER_TEMP"

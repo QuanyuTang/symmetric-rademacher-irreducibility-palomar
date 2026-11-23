@@ -17,20 +17,20 @@ sources:
   - title: "Unconditional irreducibility of characteristic polynomials of symmetric Rademacher matrices"
     authors: ["Tao Hu", "Quanyu Tang"]
     type: "paper"
-    location: "Main theorem"
+    location: "Introduction, Theorem 1.2 (label thm:main)"
     relationship: "formalizes"
-    note: "Manuscript supplied by the authors for formalization."
+    note: "Manuscript supplied privately by the authors for formalization."
   - title: "Random symmetric matrices: rank distribution and irreducibility of the characteristic polynomial"
     authors: ["Asaf Ferber", "Vishesh Jain", "Ashwin Sah", "Mehtaab Sawhney"]
-    id: "https://arxiv.org/abs/2106.04049"
+    id: "https://arxiv.org/abs/2106.04049v1"
     type: "paper"
-    location: "Section 3 and Appendix B"
+    location: "Sections 2–3 and Appendix B"
     relationship: "adapts"
   - title: "On the counting problem in inverse Littlewood–Offord theory"
     authors: ["Asaf Ferber", "Vishesh Jain", "Kyle Luh", "Wojciech Samotij"]
-    id: "https://arxiv.org/abs/1904.10425"
+    id: "https://arxiv.org/abs/1904.10425v1"
     type: "paper"
-    location: "Appendix A"
+    location: "Section 2, Theorem 1.7, and Appendix A, Theorem 1.4"
     relationship: "adapts"
   - title: "A quasi-Riemann hypothesis for Dedekind zeta functions"
     authors: ["Dean Cureton", "Jesse Thorner"]
@@ -43,7 +43,7 @@ sources:
     authors: ["Loïc Grenié", "Giuseppe Molteni"]
     id: "https://doi.org/10.1090/mcom3031"
     type: "paper"
-    location: "Section 2, equations (2.2)–(2.6)"
+    location: "Section 2, opening displays on the Euler product and logarithmic derivative"
     relationship: "background"
     note: "Background for the Euler product and prime-power Dirichlet series."
 related_formalizations:
@@ -56,14 +56,22 @@ automation:
       models: ["Codex"]
       framework: "Lean 4 and Mathlib"
   notes: "Codex developed the Lean proof from the authors' original informal argument and its Lean-oriented revision."
+status:
+  scope: "The unconditional main theorem and its proof dependencies."
+  sorry_count: 0
+  axioms: ["propext", "Classical.choice", "Quot.sound"]
 fidelity:
-  divergences: "The proof of the finite-field mean estimate uses a bound on the prime interval that appears in the main argument."
+  divergences: >-
+    Bernoulli.exists_prime_band_eigenspace_bound proves an eventual first-moment bound on
+    the supporting prime band. The analytic proof obtains its logarithmic derivative bound
+    via Borel–Carathéodory and Cauchy's derivative estimate in place of the Hadamard identity.
 review:
   status: "agent-reviewed"
   notes: "The Lean statement was checked against both manuscripts, and the final proof passed a transitive axiom audit against the pinned analytic dependency."
 alignment:
   namespace: "PalomarBernoulli"
   statements:
-    - source: "Main theorem"
+    - source: "Theorem 1.2 (label thm:main)"
       lean: "PalomarBernoulli.main_result"
       module: "PalomarBernoulliChallenge.lean and PalomarBernoulliSolution.lean"
+      status: "proved"
