@@ -49,7 +49,7 @@ sources:
 related_formalizations:
   - id: "https://github.com/AxiomMath/DedekindZetaZeroFree/commit/09afbb4ce6570c1615d58509dc197fc9f0956b7d"
     relationship: "builds-on"
-    note: "The Lean proof of the zero-free half-plane for the Dedekind zeta function."
+    note: "The Dedekind zeta library and its class field theory dependency are vendored at this commit. The Lean sources and licenses are preserved. The local Lake configuration omits the unused Tau Ceti dependency."
 automation:
   methods:
     - method: "agent"

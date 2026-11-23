@@ -14,7 +14,7 @@ The proof relates the number of rational irreducible factors, counted with multi
 
 The analytic argument establishes the Euler product and logarithmic derivative series for Mathlib's Dedekind zeta function. Borel–Carathéodory and Cauchy's derivative estimate control the logarithmic derivative in the contour shift that gives the uniform smoothed prime-ideal estimate. The release pins Lean and Mathlib to the versions used by the imported proof of the zero-free region. [Logarithmic derivative bound](Bernoulli/LogDerivativeBounds.lean#L53) · [Cureton–Thorner formalization](https://github.com/AxiomMath/DedekindZetaZeroFree/commit/09afbb4ce6570c1615d58509dc197fc9f0956b7d)
 
-The [class field theory dependency](vendor/class-field-theory) is the source subtree from that same commit. It retains its upstream licence and is declared as a contained Lake path dependency.
+The Dedekind zeta library and its class field theory dependency are contained Lake packages copied from that same commit. Both retain their upstream Lean sources and licences. The package configuration omits Tau Ceti, which is unused by the proof. [Dedekind zeta package](vendor/dedekind-zeta) · [Class field theory package](vendor/class-field-theory)
 
 The final theorem uses only Lean's standard axioms `propext`, `Classical.choice`, and `Quot.sound`.
 
@@ -26,11 +26,12 @@ lake build
 lake env lean verification/FinalAudit.lean
 ```
 
-For a Linux Comparator run, start in a fresh checkout with Bubblewrap installed. Before the build commands above, put the class field theory build directory inside the project's writable `.lake` directory.
+For a Linux Comparator run, start in a fresh checkout with Bubblewrap installed. Before the build commands above, put the vendored build directories inside the project's writable `.lake` directory.
 
 ```sh
-mkdir -p .lake/vendor/class-field-theory
+mkdir -p .lake/vendor/class-field-theory .lake/vendor/dedekind-zeta
 ln -s ../../.lake/vendor/class-field-theory vendor/class-field-theory/.lake
+ln -s ../../.lake/vendor/dedekind-zeta vendor/dedekind-zeta/.lake
 ```
 
 After building, run `PATH="$(lean --print-prefix)/bin:$PATH" lake comparator --config comparator.json` to compare the statement and replay the proof in Lean and NanoDa. Allow several gigabytes for the proof export in addition to the build artifacts. On pushes to `main` and pull requests against `main`, GitHub Actions builds the pinned class field theory dependency in a separate job and reuses its outputs by source and toolchain hash. It then builds and audits the theorem. A manually dispatched run can also request full Comparator replay.

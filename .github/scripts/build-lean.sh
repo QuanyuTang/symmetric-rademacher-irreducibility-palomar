@@ -3,7 +3,7 @@ set -euo pipefail
 
 prune_finished_module_setups() {
   local build_dir setup_file relative trace_file
-  for build_dir in .lake/build .lake/vendor/class-field-theory/build .lake/packages/dedekind_zeta/.lake/build; do
+  for build_dir in .lake/build .lake/vendor/class-field-theory/build .lake/vendor/dedekind-zeta/build; do
     [[ -d "$build_dir/ir" ]] || continue
     while IFS= read -r -d '' setup_file; do
       relative=${setup_file#"$build_dir/ir/"}

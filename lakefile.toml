@@ -3,8 +3,7 @@ defaultTargets = ["Bernoulli", "PalomarBernoulliChallenge", "PalomarBernoulliSol
 
 [[require]]
 name = "dedekind_zeta"
-git = "https://github.com/AxiomMath/DedekindZetaZeroFree"
-rev = "09afbb4ce6570c1615d58509dc197fc9f0956b7d"
+path = "vendor/dedekind-zeta"
 
 [[require]]
 name = "FiniteAbelianGlobalReciprocityv2"

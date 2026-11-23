@@ -1,0 +1,19 @@
+name = "dedekind_zeta"
+defaultTargets = ["DedekindZetaZeroFree"]
+
+[leanOptions]
+autoImplicit = false
+relaxedAutoImplicit = false
+
+[[require]]
+name = "FiniteAbelianGlobalReciprocityv2"
+path = "../class-field-theory"
+
+[[require]]
+name = "mathlib"
+git = "https://github.com/leanprover-community/mathlib4"
+rev = "0493595ecd5da8ef14742febab99728f98e948e8"
+
+[[lean_lib]]
+name = "DedekindZetaZeroFree"
+globs = ["DedekindZetaZeroFree", "DedekindZetaZeroFree.+"]

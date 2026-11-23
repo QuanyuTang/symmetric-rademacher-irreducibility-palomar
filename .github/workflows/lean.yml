@@ -47,8 +47,9 @@ jobs:
       - &vendor-build-directory
         name: Put vendor build outputs in the Comparator's writable directory
         run: |
-          mkdir -p .lake/vendor/class-field-theory
+          mkdir -p .lake/vendor/class-field-theory .lake/vendor/dedekind-zeta
           ln -s ../../.lake/vendor/class-field-theory vendor/class-field-theory/.lake
+          ln -s ../../.lake/vendor/dedekind-zeta vendor/dedekind-zeta/.lake
 
       - &class-field-source
         name: Identify the committed class field theory sources
